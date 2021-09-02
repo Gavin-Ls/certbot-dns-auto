@@ -24,7 +24,6 @@ privkeyName=privkey.pem
 
 # 证书正式部署
 deployCert(){
-        echo "证书部署"
         for ip in ${!certIpAddrs[*]};do
                 # 部署证书文件($1为公钥，$2为私钥)
                 rsync $1 $2 $server_account@$ip:${certIpAddrs[$ip]}
