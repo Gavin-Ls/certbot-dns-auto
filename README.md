@@ -23,32 +23,34 @@ pip install requests aliyun-python-sdk-core aliyun-python-sdk-alidns
 chmod +x ./bootstrap.py
 ```
 
-以 `example.config.ini` 为例，在项目更目录中设置 `config.ini` 配置文件，其中 section 对应主域名，例如 `kainonly.com`
+以 `example.config.ini` 为例，在项目更目录中设置 `config.ini` 配置文件，其中 section 对应主域名，例如 `abc.com`
 
 - **platform** 为云服务商类型，当前支持：`qcloud` 腾讯云 `aliyun` 阿里云
 - **id** 为云服务商访问密钥ID
 - **key** 为云服务商访问密钥内容
 - **ttl** 解析TTL，默认 `600`
 
-执行续约任务
+## 执行续约任务
 
 ```shell script
 certbot renew --manual-auth-hook ./bootstrap.py
 ```
 
-也可以为其编写定时脚本，例如：新建 `/etc/letsencrypt/task.sh`
-
+### 自动续约简要脚本如下：
 ```shell script
 #!/bin/sh
 uptime >> /var/log/certbot.log
-certbot renew --manual-auth-hook /opt/certbot-manual-dns/bootstrap.py --deploy-hook "docker-compose -f /opt/compose/docker-compose.yml restart nginx" >> /var/log/certbot.log
+certbot renew --manual-auth-hook /opt/certbot-dns-auto/bootstrap.py --deploy-hook "docker-compose -f /opt/compose/docker-compose.yml restart nginx" >> /var/log/certbot.log
 ```
 
+### 自动续约，并自动部署至Nginx
+> 参考项目shell脚本 auto_renew_deploy.sh
 添加执行权，将其加入定时任务
 
 ```shell script
-chmod +x /etc/letsencrypt/task.sh
+chmod +x /opt/certbot-dns-auto/auto_renew_deploy.sh
 
 crontab -e
-0 */12 * * * /etc/letsencrypt/task.sh
+# 每周1晚上0点30分检查SSL证书有效期并续期SSL证书(距离正式失效30天内，才会正式生成新证书)
+30 0 * * 1 /opt/certbot-manual-dns/auto_renew_deploy.sh > /dev/null
 ```
