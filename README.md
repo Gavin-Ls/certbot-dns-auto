@@ -47,6 +47,7 @@ certbot renew --manual-auth-hook /opt/certbot-dns-auto/bootstrap.py --deploy-hoo
 > 参考项目shell脚本 auto_renew_deploy.sh
 
 > 需要自行修改auto_renew_deploy.sh中的服务器地址、账号和域名等信息
+
 添加执行权，将其加入定时任务
 ```shell script
 chmod +x /opt/certbot-dns-auto/auto_renew_deploy.sh
